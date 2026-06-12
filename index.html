@@ -1,0 +1,585 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FIFA World Cup 2026 - Live Hub</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: 'Inter', sans-serif; background: #060a13; color: #f1f5f9; min-height: 100vh; }
+
+  .hero {
+    background: linear-gradient(135deg, #1a0040 0%, #0d1b3e 30%, #002244 50%, #003322 70%, #1a0040 100%);
+    padding: 50px 20px 40px; text-align: center; position: relative; overflow: hidden;
+    border-bottom: 3px solid; border-image: linear-gradient(90deg, #ff006e, #ffbe0b, #06d6a0, #118ab2, #8338ec) 1;
+  }
+  .hero::before {
+    content: ''; position: absolute; top: -60%; left: -40%; width: 180%; height: 220%;
+    background: radial-gradient(circle at 20% 40%, rgba(255,0,110,0.12) 0%, transparent 45%),
+      radial-gradient(circle at 80% 30%, rgba(255,190,11,0.1) 0%, transparent 45%),
+      radial-gradient(circle at 50% 80%, rgba(6,214,160,0.08) 0%, transparent 50%);
+    animation: heroPulse 6s ease-in-out infinite alternate;
+  }
+  @keyframes heroPulse { 0% { opacity: 0.6; } 100% { opacity: 1; } }
+  .hero .trophy { font-size: 3.5rem; position: relative; margin-bottom: 10px; filter: drop-shadow(0 0 20px rgba(255,190,11,0.5)); }
+  .hero h1 {
+    font-size: 3rem; font-weight: 900;
+    background: linear-gradient(135deg, #ffbe0b, #ff006e, #8338ec, #06d6a0, #118ab2);
+    background-size: 300% 300%; -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    animation: gradientShift 4s ease-in-out infinite; position: relative; letter-spacing: -1.5px;
+  }
+  @keyframes gradientShift { 0%, 100% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } }
+  .hero .subtitle { color: #94a3b8; margin-top: 8px; font-size: 1rem; position: relative; }
+  .hero .host-flags { margin-top: 14px; font-size: 1.8rem; position: relative; letter-spacing: 8px; }
+  .hero .live-now {
+    display: inline-flex; align-items: center; gap: 8px; margin-top: 18px; padding: 10px 24px;
+    background: linear-gradient(135deg, rgba(239,68,68,0.2), rgba(255,0,110,0.2));
+    border: 1px solid rgba(239,68,68,0.4); border-radius: 100px;
+    font-weight: 700; font-size: 0.9rem; color: #ff4d6d; position: relative;
+    animation: liveGlow 2s ease-in-out infinite;
+  }
+  @keyframes liveGlow { 0%, 100% { box-shadow: 0 0 15px rgba(239,68,68,0.2); } 50% { box-shadow: 0 0 30px rgba(239,68,68,0.4); } }
+  .live-dot { width: 10px; height: 10px; background: #ef4444; border-radius: 50%; animation: blink 1s infinite; box-shadow: 0 0 8px #ef4444; }
+  @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
+
+  .container { max-width: 1200px; margin: 0 auto; padding: 24px 20px; }
+
+  .countdown-section {
+    text-align: center; padding: 30px 20px; margin-bottom: 24px;
+    background: linear-gradient(135deg, rgba(131,56,236,0.08), rgba(6,214,160,0.06), rgba(255,190,11,0.05));
+    border-radius: 20px; border: 1px solid rgba(131,56,236,0.2);
+  }
+  .countdown-section .next-label { font-size: 0.8rem; color: #06d6a0; font-weight: 700; letter-spacing: 3px; text-transform: uppercase; margin-bottom: 8px; }
+  .countdown-section .next-match { font-size: 1.4rem; font-weight: 800; margin-bottom: 12px; }
+  .countdown-section .countdown {
+    font-size: 2.8rem; font-weight: 900;
+    background: linear-gradient(135deg, #ffbe0b, #ff006e, #8338ec);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    font-variant-numeric: tabular-nums; letter-spacing: 2px;
+  }
+
+  .section-title { font-size: 1.3rem; font-weight: 800; margin-bottom: 18px; display: flex; align-items: center; gap: 10px; padding-left: 4px; }
+  .section-title .emoji { font-size: 1.5rem; }
+  .section-title .colored { background: linear-gradient(135deg, #ffbe0b, #ff006e); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+
+  .streams-section { margin-bottom: 32px; }
+  .streams-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 14px; }
+
+  .stream-card {
+    background: linear-gradient(135deg, #111827 0%, #0f172a 100%);
+    border: 1px solid #1e293b; border-radius: 16px; padding: 18px;
+    display: flex; align-items: center; gap: 14px;
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    cursor: pointer; text-decoration: none; color: #f1f5f9;
+    position: relative; overflow: hidden;
+  }
+  .stream-card::before { content: ''; position: absolute; inset: 0; background: linear-gradient(135deg, var(--card-glow, transparent), transparent); opacity: 0; transition: opacity 0.3s; }
+  .stream-card:hover::before { opacity: 0.08; }
+  .stream-card:hover { transform: translateY(-3px); border-color: var(--card-border, #8338ec); box-shadow: 0 12px 35px var(--card-shadow, rgba(131,56,236,0.15)); }
+
+  .stream-logo { width: 54px; height: 54px; border-radius: 14px; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 0.72rem; text-align: center; flex-shrink: 0; line-height: 1.1; box-shadow: 0 4px 12px rgba(0,0,0,0.3); }
+  .stream-info { flex: 1; position: relative; }
+  .stream-info h3 { font-size: 1rem; font-weight: 700; margin-bottom: 4px; }
+  .stream-info p { font-size: 0.78rem; color: #94a3b8; line-height: 1.45; }
+
+  .badge { padding: 5px 12px; border-radius: 100px; font-size: 0.68rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.8px; flex-shrink: 0; }
+  .badge-free { background: linear-gradient(135deg, rgba(6,214,160,0.15), rgba(16,185,129,0.1)); color: #06d6a0; border: 1px solid rgba(6,214,160,0.35); }
+  .badge-paid { background: linear-gradient(135deg, rgba(255,190,11,0.15), rgba(245,158,11,0.1)); color: #ffbe0b; border: 1px solid rgba(255,190,11,0.35); }
+  .badge-freemium { background: linear-gradient(135deg, rgba(17,138,178,0.15), rgba(6,182,212,0.1)); color: #06b6d4; border: 1px solid rgba(6,182,212,0.35); }
+
+  .tabs { display: flex; gap: 8px; margin-bottom: 20px; flex-wrap: wrap; }
+  .tab { padding: 10px 22px; border-radius: 12px; border: 1px solid #1e293b; background: #111827; color: #64748b; font-weight: 600; font-size: 0.85rem; cursor: pointer; transition: all 0.2s; }
+  .tab:hover { border-color: #8338ec; color: #e2e8f0; }
+  .tab.active { background: linear-gradient(135deg, #8338ec, #ff006e); color: #fff; border-color: transparent; box-shadow: 0 4px 15px rgba(131,56,236,0.3); }
+
+  .filter-bar { display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap; align-items: center; }
+  .search-box { flex: 1; min-width: 200px; padding: 13px 18px; border-radius: 12px; border: 1px solid #1e293b; background: #111827; color: #f1f5f9; font-size: 0.9rem; font-family: inherit; outline: none; transition: all 0.2s; }
+  .search-box:focus { border-color: #8338ec; box-shadow: 0 0 20px rgba(131,56,236,0.15); }
+  .search-box::placeholder { color: #475569; }
+
+  .day-group { margin-bottom: 30px; }
+  .day-header {
+    font-size: 1rem; font-weight: 700; margin-bottom: 14px; padding: 10px 16px;
+    border-radius: 12px; display: flex; align-items: center; gap: 10px;
+    background: linear-gradient(90deg, rgba(131,56,236,0.1), rgba(255,0,110,0.05), transparent);
+    border-left: 4px solid; border-image: linear-gradient(180deg, #8338ec, #ff006e) 1;
+  }
+
+  .match-card {
+    background: linear-gradient(135deg, #111827 0%, #0f172a 100%);
+    border: 1px solid #1e293b; border-radius: 14px; padding: 16px 20px; margin-bottom: 10px;
+    display: flex; align-items: center; gap: 16px; transition: all 0.2s;
+  }
+  .match-card:hover { background: #1a2234; border-color: rgba(131,56,236,0.3); transform: translateX(4px); }
+  .match-card.live { border: 1px solid rgba(255,0,110,0.5); box-shadow: 0 0 25px rgba(255,0,110,0.12); background: linear-gradient(135deg, #1a0020 0%, #0f172a 100%); }
+  .match-card.upcoming { border-left: 4px solid #06d6a0; }
+  .match-card.finished { opacity: 0.5; }
+
+  .match-time { min-width: 95px; text-align: center; flex-shrink: 0; }
+  .match-time .time { font-size: 1.1rem; font-weight: 800; background: linear-gradient(135deg, #06d6a0, #118ab2); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+  .match-time .date-label { font-size: 0.68rem; color: #475569; margin-top: 2px; font-weight: 600; }
+  .match-time .live-badge { background: linear-gradient(135deg, #ef4444, #ff006e); color: #fff; padding: 4px 14px; border-radius: 100px; font-size: 0.72rem; font-weight: 800; animation: blink 1s infinite; box-shadow: 0 0 12px rgba(239,68,68,0.4); letter-spacing: 1px; }
+
+  .match-teams { flex: 1; }
+  .match-teams .teams { font-size: 1rem; font-weight: 700; }
+  .match-teams .group-label { font-size: 0.75rem; color: #64748b; margin-top: 4px; display: flex; align-items: center; gap: 6px; }
+  .stage-pill { display: inline-block; padding: 2px 8px; border-radius: 6px; font-size: 0.65rem; font-weight: 700; background: rgba(131,56,236,0.15); color: #a78bfa; border: 1px solid rgba(131,56,236,0.2); }
+  .stage-pill.knockout { background: linear-gradient(135deg, rgba(255,190,11,0.15), rgba(255,0,110,0.1)); color: #ffbe0b; border-color: rgba(255,190,11,0.3); }
+  .stage-pill.final { background: linear-gradient(135deg, rgba(255,190,11,0.2), rgba(255,0,110,0.15)); color: #ffd700; border-color: rgba(255,190,11,0.5); animation: goldPulse 2s infinite; }
+  @keyframes goldPulse { 0%, 100% { box-shadow: 0 0 5px rgba(255,215,0,0.2); } 50% { box-shadow: 0 0 15px rgba(255,215,0,0.4); } }
+
+  .match-venue { font-size: 0.75rem; color: #475569; min-width: 120px; text-align: right; display: none; }
+  @media (min-width: 768px) { .match-venue { display: block; } }
+
+  .watch-btn {
+    padding: 9px 18px; border-radius: 10px; background: linear-gradient(135deg, #8338ec, #ff006e);
+    color: #fff; font-weight: 700; font-size: 0.78rem; border: none; cursor: pointer;
+    white-space: nowrap; transition: all 0.2s; flex-shrink: 0; letter-spacing: 0.5px;
+    box-shadow: 0 4px 15px rgba(131,56,236,0.25);
+  }
+  .watch-btn:hover { transform: scale(1.08); box-shadow: 0 6px 25px rgba(255,0,110,0.35); }
+
+  .stream-panel {
+    display: none; position: fixed; bottom: 0; left: 0; right: 0;
+    background: linear-gradient(180deg, #111827 0%, #0a0e1a 100%);
+    border-top: 3px solid; border-image: linear-gradient(90deg, #8338ec, #ff006e, #ffbe0b) 1;
+    padding: 24px; z-index: 100; box-shadow: 0 -10px 50px rgba(0,0,0,0.6);
+    border-radius: 24px 24px 0 0; max-height: 65vh; overflow-y: auto;
+  }
+  .stream-panel.open { display: block; animation: slideUp 0.3s ease-out; }
+  @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
+  .stream-panel h3 { font-size: 1.15rem; margin-bottom: 16px; display: flex; align-items: center; justify-content: space-between; }
+  .stream-panel .close-btn { background: rgba(255,255,255,0.1); border: none; color: #94a3b8; font-size: 1.3rem; cursor: pointer; width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; transition: all 0.2s; }
+  .stream-panel .close-btn:hover { background: rgba(255,0,110,0.2); color: #ff006e; }
+  .stream-links-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 10px; }
+  .stream-link-item { display: flex; align-items: center; gap: 12px; padding: 14px; border-radius: 12px; border: 1px solid #1e293b; text-decoration: none; color: #f1f5f9; transition: all 0.2s; background: rgba(255,255,255,0.02); }
+  .stream-link-item:hover { background: rgba(131,56,236,0.1); border-color: #8338ec; transform: translateY(-2px); }
+
+  .no-results { text-align: center; padding: 50px; color: #475569; font-size: 1.1rem; }
+
+  footer { text-align: center; padding: 30px 20px; font-size: 0.75rem; border-top: 1px solid #1e293b; margin-top: 30px; }
+  footer .footer-rainbow { background: linear-gradient(90deg, #ff006e, #ffbe0b, #06d6a0, #118ab2, #8338ec); -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-weight: 700; }
+  footer .footer-dim { color: #334155; }
+
+  @media (max-width: 600px) {
+    .hero h1 { font-size: 1.8rem; } .hero .trophy { font-size: 2.5rem; }
+    .streams-grid { grid-template-columns: 1fr; }
+    .match-card { flex-wrap: wrap; gap: 10px; } .match-time { min-width: auto; }
+    .countdown-section .countdown { font-size: 2rem; }
+  }
+</style>
+</head>
+<body>
+<div class="hero">
+  <div class="trophy">&#127942;</div>
+  <h1>FIFA WORLD CUP 2026</h1>
+  <p class="subtitle">June 11 - July 19, 2026 &bull; All times in Bangladesh Standard Time (BST / UTC+6)</p>
+  <div class="host-flags">&#127482;&#127480; &#127474;&#127485; &#127464;&#127462;</div>
+  <div id="liveIndicator" class="live-now" style="display:none"><span class="live-dot"></span> LIVE MATCH ON NOW</div>
+</div>
+
+<div class="container">
+  <div class="countdown-section" id="countdownSection">
+    <div class="next-label">&#9889; NEXT MATCH</div>
+    <div class="next-match" id="nextMatchName">Loading...</div>
+    <div class="countdown" id="countdown">--:--:--</div>
+  </div>
+
+  <div class="streams-section">
+    <div class="section-title"><span class="emoji">&#127463;&#127465;</span> <span class="colored">Bangladesh Streams</span></div>
+    <div class="streams-grid">
+      <a href="https://www.btvlive.gov.bd/" target="_blank" class="stream-card" style="--card-glow:#06d6a0;--card-border:#06d6a0;--card-shadow:rgba(6,214,160,0.15);">
+        <div class="stream-logo" style="background:linear-gradient(135deg,#006a4e,#10b981);color:#fff;">BTV</div>
+        <div class="stream-info"><h3>BTV Live</h3><p>Bangladesh Television official stream. Free-to-air, all matches.</p></div>
+        <span class="badge badge-free">FREE</span>
+      </a>
+      <a href="https://www.youtube.com/@btvliveofficial5618" target="_blank" class="stream-card" style="--card-glow:#ef4444;--card-border:#ef4444;--card-shadow:rgba(239,68,68,0.15);">
+        <div class="stream-logo" style="background:linear-gradient(135deg,#cc0000,#ff2222);color:#fff;">&#9654; BTV</div>
+        <div class="stream-info"><h3>BTV YouTube</h3><p>Official BTV YouTube live stream. Free with Google account.</p></div>
+        <span class="badge badge-free">FREE</span>
+      </a>
+      <a href="https://www.tsportslive.com/" target="_blank" class="stream-card" style="--card-glow:#118ab2;--card-border:#118ab2;--card-shadow:rgba(17,138,178,0.15);">
+        <div class="stream-logo" style="background:linear-gradient(135deg,#0a3d6b,#1e88e5);color:#fff;">T<br>Sports</div>
+        <div class="stream-info"><h3>&#127941; T Sports Live</h3><p>Official Home of FIFA WC 2026 in BD. Full HD + studio analysis.</p></div>
+        <span class="badge badge-free">FREE</span>
+      </a>
+      <a href="https://www.youtube.com/@TSportsbd/streams" target="_blank" class="stream-card" style="--card-glow:#ef4444;--card-border:#ef4444;--card-shadow:rgba(239,68,68,0.15);">
+        <div class="stream-logo" style="background:linear-gradient(135deg,#cc0000,#1e88e5);color:#fff;">&#9654; TS</div>
+        <div class="stream-info"><h3>T Sports YouTube</h3><p>Official T Sports YouTube live streams.</p></div>
+        <span class="badge badge-free">FREE</span>
+      </a>
+      <a href="https://www.tsports.com/" target="_blank" class="stream-card" style="--card-glow:#118ab2;--card-border:#3b82f6;--card-shadow:rgba(59,130,246,0.15);">
+        <div class="stream-logo" style="background:linear-gradient(135deg,#1565c0,#42a5f5);color:#fff;">T Web</div>
+        <div class="stream-info"><h3>T Sports Website</h3><p>News, scores, highlights &amp; streaming info.</p></div>
+        <span class="badge badge-free">FREE</span>
+      </a>
+      <a href="https://toffeelive.com/" target="_blank" class="stream-card" style="--card-glow:#ff9800;--card-border:#ff9800;--card-shadow:rgba(255,152,0,0.15);">
+        <div class="stream-logo" style="background:linear-gradient(135deg,#e65100,#ff9800);color:#fff;">Toffee</div>
+        <div class="stream-info"><h3>&#127871; Toffee (Banglalink)</h3><p>All 104 matches, Full HD. Tk 99 / Tk 129. <strong>FREE with Banglalink 30-day bundle!</strong></p></div>
+        <span class="badge badge-freemium">TK 99</span>
+      </a>
+      <a href="https://www.bioscope.live/" target="_blank" class="stream-card" style="--card-glow:#8338ec;--card-border:#8338ec;--card-shadow:rgba(131,56,236,0.15);">
+        <div class="stream-logo" style="background:linear-gradient(135deg,#6a1b9a,#ab47bc);color:#fff;">Bio+</div>
+        <div class="stream-info"><h3>&#127909; Bioscope+ (GP)</h3><p>All matches via MyGP, Skitto. Tk 97 for 50 days. Any network.</p></div>
+        <span class="badge badge-paid">TK 97</span>
+      </a>
+      <a href="https://www.robi.com.bd/en" target="_blank" class="stream-card" style="--card-glow:#ef4444;--card-border:#ef4444;--card-shadow:rgba(239,68,68,0.15);">
+        <div class="stream-logo" style="background:linear-gradient(135deg,#b71c1c,#ef5350);color:#fff;">Robi</div>
+        <div class="stream-info"><h3>&#128241; My Robi App</h3><p>Robi subscribers stream all WC matches via app.</p></div>
+        <span class="badge badge-paid">PAID</span>
+      </a>
+      <a href="https://somoynews.tv/live" target="_blank" class="stream-card" style="--card-glow:#06d6a0;--card-border:#06d6a0;--card-shadow:rgba(6,214,160,0.15);">
+        <div class="stream-logo" style="background:linear-gradient(135deg,#00695c,#26a69a);color:#fff;">Somoy</div>
+        <div class="stream-info"><h3>&#128250; Somoy TV</h3><p>National news channel carrying live WC broadcasts.</p></div>
+        <span class="badge badge-free">FREE</span>
+      </a>
+    </div>
+  </div>
+
+  <div class="streams-section">
+    <div class="section-title"><span class="emoji">&#127760;</span> <span class="colored">International Free Streams</span></div>
+    <div class="streams-grid">
+      <a href="https://www.bbc.co.uk/iplayer" target="_blank" class="stream-card" style="--card-glow:#fff;--card-border:#64748b;--card-shadow:rgba(255,255,255,0.08);">
+        <div class="stream-logo" style="background:#000;color:#fff;font-size:0.65rem;">BBC iPlayer</div>
+        <div class="stream-info"><h3>&#127468;&#127463; BBC iPlayer</h3><p>UK only. All 104 matches free. UK account needed.</p></div>
+        <span class="badge badge-free">FREE (UK)</span>
+      </a>
+      <a href="https://www.itv.com/watch" target="_blank" class="stream-card" style="--card-glow:#06b6d4;--card-border:#06b6d4;--card-shadow:rgba(6,182,212,0.15);">
+        <div class="stream-logo" style="background:linear-gradient(135deg,#0077b6,#00b4d8);color:#fff;">ITVX</div>
+        <div class="stream-info"><h3>&#127468;&#127463; ITVX</h3><p>UK only. All 104 matches with BBC. Free signup.</p></div>
+        <span class="badge badge-free">FREE (UK)</span>
+      </a>
+      <a href="https://www.sbs.com.au/ondemand" target="_blank" class="stream-card" style="--card-glow:#ffbe0b;--card-border:#ffbe0b;--card-shadow:rgba(255,190,11,0.15);">
+        <div class="stream-logo" style="background:linear-gradient(135deg,#1a237e,#283593);color:#fff;">SBS</div>
+        <div class="stream-info"><h3>&#127462;&#127482; SBS On Demand</h3><p>Australia. All 104 matches free.</p></div>
+        <span class="badge badge-free">FREE (AU)</span>
+      </a>
+      <a href="https://www.youtube.com/@CazeTVOficial" target="_blank" class="stream-card" style="--card-glow:#06d6a0;--card-border:#06d6a0;--card-shadow:rgba(6,214,160,0.15);">
+        <div class="stream-logo" style="background:linear-gradient(135deg,#006400,#ffbe0b);color:#fff;">Caz&#233;</div>
+        <div class="stream-info"><h3>&#127463;&#127479; Caz&#233;TV (YouTube)</h3><p>Brazil. Full matches free on YouTube.</p></div>
+        <span class="badge badge-free">FREE (BR)</span>
+      </a>
+      <a href="https://tubitv.com/" target="_blank" class="stream-card" style="--card-glow:#ff006e;--card-border:#ff006e;--card-shadow:rgba(255,0,110,0.15);">
+        <div class="stream-logo" style="background:linear-gradient(135deg,#e64a19,#ff7043);color:#fff;">Tubi</div>
+        <div class="stream-info"><h3>&#127482;&#127480; Tubi</h3><p>USA. Select matches free in 4K.</p></div>
+        <span class="badge badge-free">FREE (US)</span>
+      </a>
+      <a href="https://www.rte.ie/player/" target="_blank" class="stream-card" style="--card-glow:#06d6a0;--card-border:#06d6a0;--card-shadow:rgba(6,214,160,0.15);">
+        <div class="stream-logo" style="background:linear-gradient(135deg,#1b5e20,#2e7d32);color:#fff;">RT&#201;</div>
+        <div class="stream-info"><h3>&#127470;&#127466; RT&#201; Player</h3><p>Ireland. Free-to-air all matches.</p></div>
+        <span class="badge badge-free">FREE (IE)</span>
+      </a>
+    </div>
+  </div>
+
+  <div class="section-title"><span class="emoji">&#9917;</span> <span class="colored">Match Schedule</span></div>
+  <div class="filter-bar"><input type="text" class="search-box" id="searchBox" placeholder="&#128269; Search team, group, venue..."></div>
+  <div class="tabs" id="tabsContainer">
+    <button class="tab active" data-filter="all">All Matches</button>
+    <button class="tab" data-filter="today">Today</button>
+    <button class="tab" data-filter="live">&#128308; Live</button>
+    <button class="tab" data-filter="upcoming">Upcoming</button>
+    <button class="tab" data-filter="group">Group Stage</button>
+    <button class="tab" data-filter="knockout">Knockouts</button>
+  </div>
+  <div id="matchesContainer"></div>
+</div>
+
+<div class="stream-panel" id="streamPanel">
+  <h3><span id="panelTitle">Watch This Match</span><button class="close-btn" onclick="closePanel()">&#10005;</button></h3>
+  <div class="stream-links-list" id="panelLinks"></div>
+</div>
+
+<footer>
+  <span class="footer-rainbow">FIFA World Cup 2026 Live Hub</span><br>
+  <span class="footer-dim">All stream links are official &amp; legal &bull; Times in BST (UTC+6) &bull; Built with &#9829;</span>
+</footer>
+
+<script>
+const FLAGS={"Mexico":"\u{1F1F2}\u{1F1FD}","South Africa":"\u{1F1FF}\u{1F1E6}","South Korea":"\u{1F1F0}\u{1F1F7}","Czechia":"\u{1F1E8}\u{1F1FF}","Canada":"\u{1F1E8}\u{1F1E6}","Bosnia":"\u{1F1E7}\u{1F1E6}","USA":"\u{1F1FA}\u{1F1F8}","Paraguay":"\u{1F1F5}\u{1F1FE}","Qatar":"\u{1F1F6}\u{1F1E6}","Switzerland":"\u{1F1E8}\u{1F1ED}","Brazil":"\u{1F1E7}\u{1F1F7}","Morocco":"\u{1F1F2}\u{1F1E6}","Haiti":"\u{1F1ED}\u{1F1F9}","Scotland":"\u{1F3F4}\u{E0067}\u{E0062}\u{E0073}\u{E0063}\u{E0074}\u{E007F}","Australia":"\u{1F1E6}\u{1F1FA}","Turkey":"\u{1F1F9}\u{1F1F7}","Germany":"\u{1F1E9}\u{1F1EA}","Curaçao":"\u{1F1E8}\u{1F1FC}","Netherlands":"\u{1F1F3}\u{1F1F1}","Japan":"\u{1F1EF}\u{1F1F5}","Ivory Coast":"\u{1F1E8}\u{1F1EE}","Ecuador":"\u{1F1EA}\u{1F1E8}","Sweden":"\u{1F1F8}\u{1F1EA}","Tunisia":"\u{1F1F9}\u{1F1F3}","Spain":"\u{1F1EA}\u{1F1F8}","Cape Verde":"\u{1F1E8}\u{1F1FB}","Belgium":"\u{1F1E7}\u{1F1EA}","Egypt":"\u{1F1EA}\u{1F1EC}","Saudi Arabia":"\u{1F1F8}\u{1F1E6}","Uruguay":"\u{1F1FA}\u{1F1FE}","Iran":"\u{1F1EE}\u{1F1F7}","New Zealand":"\u{1F1F3}\u{1F1FF}","Austria":"\u{1F1E6}\u{1F1F9}","Jordan":"\u{1F1EF}\u{1F1F4}","France":"\u{1F1EB}\u{1F1F7}","Senegal":"\u{1F1F8}\u{1F1F3}","Iraq":"\u{1F1EE}\u{1F1F6}","Norway":"\u{1F1F3}\u{1F1F4}","Argentina":"\u{1F1E6}\u{1F1F7}","Algeria":"\u{1F1E9}\u{1F1FF}","Portugal":"\u{1F1F5}\u{1F1F9}","DR Congo":"\u{1F1E8}\u{1F1E9}","England":"\u{1F3F4}\u{E0067}\u{E0062}\u{E0065}\u{E006E}\u{E0067}\u{E007F}","Croatia":"\u{1F1ED}\u{1F1F7}","Ghana":"\u{1F1EC}\u{1F1ED}","Panama":"\u{1F1F5}\u{1F1E6}","Uzbekistan":"\u{1F1FA}\u{1F1FF}","Colombia":"\u{1F1E8}\u{1F1F4}","TBD":"❓"};
+
+const STREAMS=[
+  {name:"BTV Live",url:"https://www.btvlive.gov.bd/",type:"free",color:"#10b981",emoji:"\u{1F4FA}"},
+  {name:"BTV YouTube",url:"https://www.youtube.com/@btvliveofficial5618",type:"free",color:"#cc0000",emoji:"▶️"},
+  {name:"T Sports Live",url:"https://www.tsportslive.com/",type:"free",color:"#1e88e5",emoji:"\u{1F3C6}"},
+  {name:"T Sports YouTube",url:"https://www.youtube.com/@TSportsbd/streams",type:"free",color:"#cc0000",emoji:"▶️"},
+  {name:"Toffee (Tk 99)",url:"https://toffeelive.com/",type:"freemium",color:"#ff9800",emoji:"\u{1F36C}"},
+  {name:"Bioscope+ (Tk 97)",url:"https://www.bioscope.live/",type:"paid",color:"#ab47bc",emoji:"\u{1F3AC}"},
+  {name:"My Robi",url:"https://www.robi.com.bd/en",type:"paid",color:"#ef5350",emoji:"\u{1F4F1}"},
+  {name:"Somoy TV",url:"https://somoynews.tv/live",type:"free",color:"#26a69a",emoji:"\u{1F4FA}"},
+];
+
+// ALL BST TIMES from worldcuplocaltime.com — hardcoded to avoid timezone bugs
+const MATCHES=[
+  // MD1
+  {d:"2026-06-12",t:"01:00",home:"Mexico",away:"South Africa",group:"A",venue:"Mexico City"},
+  {d:"2026-06-12",t:"08:00",home:"South Korea",away:"Czechia",group:"A",venue:"Guadalajara"},
+  {d:"2026-06-13",t:"01:00",home:"Canada",away:"Bosnia",group:"B",venue:"Toronto"},
+  {d:"2026-06-13",t:"07:00",home:"USA",away:"Paraguay",group:"D",venue:"Los Angeles"},
+  {d:"2026-06-14",t:"01:00",home:"Qatar",away:"Switzerland",group:"B",venue:"SF Bay Area"},
+  {d:"2026-06-14",t:"04:00",home:"Brazil",away:"Morocco",group:"C",venue:"New York"},
+  {d:"2026-06-14",t:"07:00",home:"Haiti",away:"Scotland",group:"C",venue:"Boston"},
+  {d:"2026-06-14",t:"10:00",home:"Australia",away:"Turkey",group:"D",venue:"Vancouver"},
+  {d:"2026-06-14",t:"23:00",home:"Germany",away:"Curaçao",group:"E",venue:"Houston"},
+  {d:"2026-06-15",t:"02:00",home:"Netherlands",away:"Japan",group:"F",venue:"Dallas"},
+  {d:"2026-06-15",t:"05:00",home:"Ivory Coast",away:"Ecuador",group:"E",venue:"Philadelphia"},
+  {d:"2026-06-15",t:"08:00",home:"Sweden",away:"Tunisia",group:"F",venue:"Monterrey"},
+  {d:"2026-06-15",t:"22:00",home:"Spain",away:"Cape Verde",group:"H",venue:"Atlanta"},
+  {d:"2026-06-16",t:"01:00",home:"Belgium",away:"Egypt",group:"G",venue:"Seattle"},
+  {d:"2026-06-16",t:"04:00",home:"Saudi Arabia",away:"Uruguay",group:"H",venue:"Miami"},
+  {d:"2026-06-16",t:"07:00",home:"Iran",away:"New Zealand",group:"G",venue:"Los Angeles"},
+  {d:"2026-06-17",t:"01:00",home:"France",away:"Senegal",group:"I",venue:"New York"},
+  {d:"2026-06-17",t:"04:00",home:"Iraq",away:"Norway",group:"I",venue:"Boston"},
+  {d:"2026-06-17",t:"07:00",home:"Argentina",away:"Algeria",group:"J",venue:"Kansas City"},
+  {d:"2026-06-17",t:"10:00",home:"Austria",away:"Jordan",group:"J",venue:"SF Bay Area"},
+  {d:"2026-06-17",t:"23:00",home:"Portugal",away:"DR Congo",group:"K",venue:"Houston"},
+  {d:"2026-06-18",t:"02:00",home:"England",away:"Croatia",group:"L",venue:"Dallas"},
+  {d:"2026-06-18",t:"05:00",home:"Ghana",away:"Panama",group:"L",venue:"Toronto"},
+  {d:"2026-06-18",t:"08:00",home:"Uzbekistan",away:"Colombia",group:"K",venue:"Mexico City"},
+  // MD2
+  {d:"2026-06-18",t:"22:00",home:"Czechia",away:"South Africa",group:"A",venue:"Atlanta"},
+  {d:"2026-06-19",t:"01:00",home:"Switzerland",away:"Bosnia",group:"B",venue:"Los Angeles"},
+  {d:"2026-06-19",t:"04:00",home:"Canada",away:"Qatar",group:"B",venue:"Vancouver"},
+  {d:"2026-06-19",t:"07:00",home:"Mexico",away:"South Korea",group:"A",venue:"Guadalajara"},
+  {d:"2026-06-20",t:"01:00",home:"USA",away:"Australia",group:"D",venue:"Seattle"},
+  {d:"2026-06-20",t:"04:00",home:"Scotland",away:"Morocco",group:"C",venue:"Boston"},
+  {d:"2026-06-20",t:"06:30",home:"Brazil",away:"Haiti",group:"C",venue:"Philadelphia"},
+  {d:"2026-06-20",t:"09:00",home:"Turkey",away:"Paraguay",group:"D",venue:"SF Bay Area"},
+  {d:"2026-06-20",t:"23:00",home:"Netherlands",away:"Sweden",group:"F",venue:"Houston"},
+  {d:"2026-06-21",t:"02:00",home:"Germany",away:"Ivory Coast",group:"E",venue:"Toronto"},
+  {d:"2026-06-21",t:"06:00",home:"Ecuador",away:"Curaçao",group:"E",venue:"Kansas City"},
+  {d:"2026-06-21",t:"10:00",home:"Tunisia",away:"Japan",group:"F",venue:"Monterrey"},
+  {d:"2026-06-21",t:"22:00",home:"Spain",away:"Saudi Arabia",group:"H",venue:"Atlanta"},
+  {d:"2026-06-22",t:"01:00",home:"Belgium",away:"Iran",group:"G",venue:"Los Angeles"},
+  {d:"2026-06-22",t:"04:00",home:"Uruguay",away:"Cape Verde",group:"H",venue:"Miami"},
+  {d:"2026-06-22",t:"07:00",home:"New Zealand",away:"Egypt",group:"G",venue:"Vancouver"},
+  {d:"2026-06-22",t:"23:00",home:"Argentina",away:"Austria",group:"J",venue:"Dallas"},
+  {d:"2026-06-23",t:"03:00",home:"France",away:"Iraq",group:"I",venue:"Philadelphia"},
+  {d:"2026-06-23",t:"06:00",home:"Norway",away:"Senegal",group:"I",venue:"New York"},
+  {d:"2026-06-23",t:"09:00",home:"Jordan",away:"Algeria",group:"J",venue:"SF Bay Area"},
+  {d:"2026-06-23",t:"23:00",home:"Portugal",away:"Uzbekistan",group:"K",venue:"Houston"},
+  {d:"2026-06-24",t:"02:00",home:"England",away:"Ghana",group:"L",venue:"Boston"},
+  {d:"2026-06-24",t:"05:00",home:"Panama",away:"Croatia",group:"L",venue:"Toronto"},
+  {d:"2026-06-24",t:"08:00",home:"Colombia",away:"DR Congo",group:"K",venue:"Guadalajara"},
+  // MD3 (simultaneous)
+  {d:"2026-06-25",t:"01:00",home:"Switzerland",away:"Canada",group:"B",venue:"Vancouver"},
+  {d:"2026-06-25",t:"01:00",home:"Bosnia",away:"Qatar",group:"B",venue:"Seattle"},
+  {d:"2026-06-25",t:"04:00",home:"Scotland",away:"Brazil",group:"C",venue:"Miami"},
+  {d:"2026-06-25",t:"04:00",home:"Morocco",away:"Haiti",group:"C",venue:"Atlanta"},
+  {d:"2026-06-25",t:"07:00",home:"Czechia",away:"Mexico",group:"A",venue:"Mexico City"},
+  {d:"2026-06-25",t:"07:00",home:"South Africa",away:"South Korea",group:"A",venue:"Monterrey"},
+  {d:"2026-06-26",t:"02:00",home:"Curaçao",away:"Ivory Coast",group:"E",venue:"Philadelphia"},
+  {d:"2026-06-26",t:"02:00",home:"Ecuador",away:"Germany",group:"E",venue:"New York"},
+  {d:"2026-06-26",t:"05:00",home:"Japan",away:"Sweden",group:"F",venue:"Dallas"},
+  {d:"2026-06-26",t:"05:00",home:"Tunisia",away:"Netherlands",group:"F",venue:"Kansas City"},
+  {d:"2026-06-26",t:"08:00",home:"Turkey",away:"USA",group:"D",venue:"Los Angeles"},
+  {d:"2026-06-26",t:"08:00",home:"Paraguay",away:"Australia",group:"D",venue:"SF Bay Area"},
+  {d:"2026-06-27",t:"01:00",home:"Norway",away:"France",group:"I",venue:"Boston"},
+  {d:"2026-06-27",t:"01:00",home:"Senegal",away:"Iraq",group:"I",venue:"Toronto"},
+  {d:"2026-06-27",t:"06:00",home:"Cape Verde",away:"Saudi Arabia",group:"H",venue:"Houston"},
+  {d:"2026-06-27",t:"06:00",home:"Uruguay",away:"Spain",group:"H",venue:"Guadalajara"},
+  {d:"2026-06-27",t:"09:00",home:"Egypt",away:"Iran",group:"G",venue:"Seattle"},
+  {d:"2026-06-27",t:"09:00",home:"New Zealand",away:"Belgium",group:"G",venue:"Vancouver"},
+  {d:"2026-06-28",t:"03:00",home:"Panama",away:"England",group:"L",venue:"New York"},
+  {d:"2026-06-28",t:"03:00",home:"Croatia",away:"Ghana",group:"L",venue:"Philadelphia"},
+  {d:"2026-06-28",t:"05:30",home:"Colombia",away:"Portugal",group:"K",venue:"Miami"},
+  {d:"2026-06-28",t:"05:30",home:"DR Congo",away:"Uzbekistan",group:"K",venue:"Atlanta"},
+  {d:"2026-06-28",t:"08:00",home:"Algeria",away:"Austria",group:"J",venue:"Kansas City"},
+  {d:"2026-06-28",t:"08:00",home:"Jordan",away:"Argentina",group:"J",venue:"Dallas"},
+  // R32
+  {d:"2026-06-29",t:"01:00",home:"TBD",away:"TBD",group:"R32",venue:"Los Angeles",stage:"Round of 32"},
+  {d:"2026-06-29",t:"23:00",home:"TBD",away:"TBD",group:"R32",venue:"Houston",stage:"Round of 32"},
+  {d:"2026-06-30",t:"02:30",home:"TBD",away:"TBD",group:"R32",venue:"Boston",stage:"Round of 32"},
+  {d:"2026-06-30",t:"07:00",home:"TBD",away:"TBD",group:"R32",venue:"Monterrey",stage:"Round of 32"},
+  {d:"2026-06-30",t:"23:00",home:"TBD",away:"TBD",group:"R32",venue:"Dallas",stage:"Round of 32"},
+  {d:"2026-07-01",t:"03:00",home:"TBD",away:"TBD",group:"R32",venue:"New York",stage:"Round of 32"},
+  {d:"2026-07-01",t:"07:00",home:"TBD",away:"TBD",group:"R32",venue:"Mexico City",stage:"Round of 32"},
+  {d:"2026-07-01",t:"22:00",home:"TBD",away:"TBD",group:"R32",venue:"Atlanta",stage:"Round of 32"},
+  {d:"2026-07-02",t:"02:00",home:"TBD",away:"TBD",group:"R32",venue:"Seattle",stage:"Round of 32"},
+  {d:"2026-07-02",t:"06:00",home:"TBD",away:"TBD",group:"R32",venue:"SF Bay Area",stage:"Round of 32"},
+  {d:"2026-07-03",t:"01:00",home:"TBD",away:"TBD",group:"R32",venue:"Los Angeles",stage:"Round of 32"},
+  {d:"2026-07-03",t:"05:00",home:"TBD",away:"TBD",group:"R32",venue:"Toronto",stage:"Round of 32"},
+  {d:"2026-07-03",t:"09:00",home:"TBD",away:"TBD",group:"R32",venue:"Vancouver",stage:"Round of 32"},
+  {d:"2026-07-04",t:"00:00",home:"TBD",away:"TBD",group:"R32",venue:"Dallas",stage:"Round of 32"},
+  {d:"2026-07-04",t:"04:00",home:"TBD",away:"TBD",group:"R32",venue:"Miami",stage:"Round of 32"},
+  {d:"2026-07-04",t:"07:30",home:"TBD",away:"TBD",group:"R32",venue:"Kansas City",stage:"Round of 32"},
+  // R16
+  {d:"2026-07-04",t:"23:00",home:"TBD",away:"TBD",group:"R16",venue:"Houston",stage:"Round of 16"},
+  {d:"2026-07-05",t:"03:00",home:"TBD",away:"TBD",group:"R16",venue:"Philadelphia",stage:"Round of 16"},
+  {d:"2026-07-06",t:"02:00",home:"TBD",away:"TBD",group:"R16",venue:"New York",stage:"Round of 16"},
+  {d:"2026-07-06",t:"06:00",home:"TBD",away:"TBD",group:"R16",venue:"Mexico City",stage:"Round of 16"},
+  {d:"2026-07-07",t:"01:00",home:"TBD",away:"TBD",group:"R16",venue:"Dallas",stage:"Round of 16"},
+  {d:"2026-07-07",t:"06:00",home:"TBD",away:"TBD",group:"R16",venue:"Seattle",stage:"Round of 16"},
+  {d:"2026-07-07",t:"22:00",home:"TBD",away:"TBD",group:"R16",venue:"Atlanta",stage:"Round of 16"},
+  {d:"2026-07-08",t:"02:00",home:"TBD",away:"TBD",group:"R16",venue:"Vancouver",stage:"Round of 16"},
+  // QF
+  {d:"2026-07-10",t:"02:00",home:"TBD",away:"TBD",group:"QF",venue:"Boston",stage:"Quarter-final"},
+  {d:"2026-07-11",t:"01:00",home:"TBD",away:"TBD",group:"QF",venue:"Los Angeles",stage:"Quarter-final"},
+  {d:"2026-07-12",t:"03:00",home:"TBD",away:"TBD",group:"QF",venue:"Miami",stage:"Quarter-final"},
+  {d:"2026-07-12",t:"07:00",home:"TBD",away:"TBD",group:"QF",venue:"Kansas City",stage:"Quarter-final"},
+  // SF
+  {d:"2026-07-15",t:"01:00",home:"TBD",away:"TBD",group:"SF",venue:"Dallas",stage:"Semi-final"},
+  {d:"2026-07-16",t:"01:00",home:"TBD",away:"TBD",group:"SF",venue:"Atlanta",stage:"Semi-final"},
+  // 3rd
+  {d:"2026-07-19",t:"03:00",home:"TBD",away:"TBD",group:"3rd",venue:"Miami",stage:"3rd Place"},
+  // FINAL
+  {d:"2026-07-20",t:"01:00",home:"TBD",away:"TBD",group:"FINAL",venue:"New York/New Jersey",stage:"FINAL"},
+];
+
+function flag(team) { return FLAGS[team] || ""; }
+
+// Create Date from BST time string — timezone-independent
+function bstToDate(dateStr, timeStr) {
+  return new Date(`${dateStr}T${timeStr}:00+06:00`);
+}
+
+// Format Date to BST display — always correct regardless of user's system timezone
+function formatBST(dt) {
+  const utcMs = dt.getTime();
+  const bstMs = utcMs + 6 * 3600000;
+  const bstDt = new Date(bstMs);
+  let h = bstDt.getUTCHours();
+  const m = bstDt.getUTCMinutes().toString().padStart(2, '0');
+  const ampm = h >= 12 ? 'PM' : 'AM';
+  h = h % 12 || 12;
+  return `${h}:${m} ${ampm}`;
+}
+
+function formatDateFull(dt) {
+  const utcMs = dt.getTime() + 6 * 3600000;
+  const bstDt = new Date(utcMs);
+  const days = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+  const months = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+  return `${days[bstDt.getUTCDay()]}, ${bstDt.getUTCDate()} ${months[bstDt.getUTCMonth()]} ${bstDt.getUTCFullYear()}`;
+}
+
+function bstDateKey(dt) {
+  const utcMs = dt.getTime() + 6 * 3600000;
+  const bstDt = new Date(utcMs);
+  return `${bstDt.getUTCFullYear()}-${String(bstDt.getUTCMonth()+1).padStart(2,'0')}-${String(bstDt.getUTCDate()).padStart(2,'0')}`;
+}
+
+function todayBSTKey() {
+  const now = new Date();
+  const utcMs = now.getTime() + 6 * 3600000;
+  const bstDt = new Date(utcMs);
+  return `${bstDt.getUTCFullYear()}-${String(bstDt.getUTCMonth()+1).padStart(2,'0')}-${String(bstDt.getUTCDate()).padStart(2,'0')}`;
+}
+
+function getMatchStatus(matchDate) {
+  const now = new Date();
+  const end = new Date(matchDate.getTime() + 120 * 60000);
+  if (now >= matchDate && now <= end) return 'live';
+  if (now < matchDate) return 'upcoming';
+  return 'finished';
+}
+
+function getStagePill(m) {
+  if (m.stage === 'FINAL') return '<span class="stage-pill final">\u{1F3C6} FINAL</span>';
+  if (m.stage) return `<span class="stage-pill knockout">${m.stage}</span>`;
+  return `<span class="stage-pill">Group ${m.group}</span>`;
+}
+
+let activeFilter = 'all', searchQuery = '';
+
+function renderMatches() {
+  const container = document.getElementById('matchesContainer');
+  let filtered = MATCHES.map(m => {
+    const dt = bstToDate(m.d, m.t);
+    return { ...m, dt, status: getMatchStatus(dt) };
+  });
+
+  const todayKey = todayBSTKey();
+  if (activeFilter === 'today') filtered = filtered.filter(m => bstDateKey(m.dt) === todayKey);
+  else if (activeFilter === 'live') filtered = filtered.filter(m => m.status === 'live');
+  else if (activeFilter === 'upcoming') filtered = filtered.filter(m => m.status === 'upcoming');
+  else if (activeFilter === 'group') filtered = filtered.filter(m => !m.stage);
+  else if (activeFilter === 'knockout') filtered = filtered.filter(m => m.stage);
+
+  if (searchQuery) {
+    const q = searchQuery.toLowerCase();
+    filtered = filtered.filter(m =>
+      m.home.toLowerCase().includes(q) || m.away.toLowerCase().includes(q) ||
+      m.group.toLowerCase().includes(q) || m.venue.toLowerCase().includes(q) ||
+      (m.stage && m.stage.toLowerCase().includes(q))
+    );
+  }
+
+  const days = {};
+  filtered.forEach(m => { const k = bstDateKey(m.dt); if (!days[k]) days[k] = []; days[k].push(m); });
+
+  if (!Object.keys(days).length) { container.innerHTML = '<div class="no-results">No matches found</div>'; return; }
+
+  let html = '';
+  Object.keys(days).sort().forEach(dk => {
+    const matches = days[dk].sort((a, b) => a.dt - b.dt);
+    html += `<div class="day-group"><div class="day-header">\u{1F4C5} ${formatDateFull(matches[0].dt)}</div>`;
+    matches.forEach(m => {
+      const cls = m.status;
+      const timeHtml = m.status === 'live'
+        ? '<span class="live-badge">● LIVE</span>'
+        : `<span class="time">${formatBST(m.dt)}</span><div class="date-label">BST</div>`;
+      html += `<div class="match-card ${cls}">
+        <div class="match-time">${timeHtml}</div>
+        <div class="match-teams">
+          <div class="teams">${flag(m.home)} ${m.home}  vs  ${flag(m.away)} ${m.away}</div>
+          <div class="group-label">${getStagePill(m)} • ${m.venue}</div>
+        </div>
+        <div class="match-venue">${m.venue}</div>
+        <button class="watch-btn" onclick="openPanel('${flag(m.home)} ${m.home} vs ${flag(m.away)} ${m.away}')">▶ Watch</button>
+      </div>`;
+    });
+    html += '</div>';
+  });
+  container.innerHTML = html;
+  document.getElementById('liveIndicator').style.display = MATCHES.some(m => getMatchStatus(bstToDate(m.d, m.t)) === 'live') ? 'inline-flex' : 'none';
+}
+
+function updateCountdown() {
+  const now = new Date();
+  let next = null;
+  for (const m of MATCHES) { const dt = bstToDate(m.d, m.t); if (dt > now) { next = { ...m, dt }; break; } }
+  if (!next) { document.getElementById('countdownSection').style.display = 'none'; return; }
+  document.getElementById('nextMatchName').textContent = `${flag(next.home)} ${next.home}  vs  ${flag(next.away)} ${next.away}`;
+  const diff = next.dt - now;
+  const h = Math.floor(diff / 3600000), mins = Math.floor((diff % 3600000) / 60000), secs = Math.floor((diff % 60000) / 1000);
+  document.getElementById('countdown').textContent = h > 24
+    ? `${Math.floor(h/24)}d ${h%24}h ${mins}m`
+    : `${h.toString().padStart(2,'0')}:${mins.toString().padStart(2,'0')}:${secs.toString().padStart(2,'0')}`;
+}
+
+function openPanel(matchName) {
+  document.getElementById('panelTitle').textContent = `Watch: ${matchName}`;
+  let html = '';
+  STREAMS.forEach(s => {
+    const badge = s.type === 'free' ? '<span class="badge badge-free">FREE</span>'
+      : s.type === 'freemium' ? '<span class="badge badge-freemium">TK 99</span>'
+      : '<span class="badge badge-paid">PAID</span>';
+    html += `<a href="${s.url}" target="_blank" class="stream-link-item">
+      <div style="width:40px;height:40px;border-radius:10px;background:${s.color};display:flex;align-items:center;justify-content:center;font-size:1.2rem;flex-shrink:0;">${s.emoji}</div>
+      <div style="flex:1"><div style="font-weight:700;font-size:0.9rem;">${s.name}</div></div>${badge}</a>`;
+  });
+  document.getElementById('panelLinks').innerHTML = html;
+  document.getElementById('streamPanel').classList.add('open');
+}
+
+function closePanel() { document.getElementById('streamPanel').classList.remove('open'); }
+
+document.querySelectorAll('.tab').forEach(tab => {
+  tab.addEventListener('click', () => {
+    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+    tab.classList.add('active');
+    activeFilter = tab.dataset.filter;
+    renderMatches();
+  });
+});
+document.getElementById('searchBox').addEventListener('input', e => { searchQuery = e.target.value; renderMatches(); });
+
+renderMatches();
+updateCountdown();
+setInterval(updateCountdown, 1000);
+setInterval(renderMatches, 60000);
+</script>
+</body>
+</html>
